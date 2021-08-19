@@ -108,7 +108,7 @@ Function               | Operator | Example
 
 ```php
 <?php
-class UserIsRecent implements Specification
+class RecentUser implements Specification
 {
     private $daysAgo;
     
@@ -130,12 +130,9 @@ class UserIsRecent implements Specification
 
 ```php
 <?php
-
 $user = new User(/** ... */);
 
-(new UserIsRecent(30))->isSatisfiedBy($user); // (bool)
-rule(UserIsRecent::class, 30)->isSatisfiedBy($user); // (bool)
-
-anyOf()->rule(UserIsRecent::class)->method('getAge', between(20, 30))->isSatisfiedBy($user); // (bool) 
-
+(new RecentUser(30))->isSatisfiedBy($user); // (bool)
+rule(RecentUser::class, 30)->isSatisfiedBy($user); // (bool)
+anyOf()->rule(RecentUser::class)->method('getCategory', in(['premium']))->isSatisfiedBy($user); // (bool)
 ```
