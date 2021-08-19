@@ -52,6 +52,8 @@ Function | Specification |
 `in($values, bool $trict = true)`               | evaluates if the candidate exists in a list 
 `true()`                    | Always `true` 
 `false()`                   | Always `false` 
+`spec(Specification $spec)`                   | proxy another specification 
+`rule($rule)`                   | callable or specification class name
 
 ### Operators
 
@@ -102,4 +104,38 @@ Function               | Operator | Example
 `length(Specification $spcification)`               | Extract the length from string candidates | `length(equals(10))`
 
 
+### Creating Specifications
 
+```php
+<?php
+class UserIsRecent implements Specification
+{
+    private $daysAgo;
+    
+    public function __construct(int $daysAgo = 15) {
+        $this->daysAgo = $daysAgo;
+    }
+    
+    public function isSatisfiedBy($candidate): bool
+    {
+        $daysAgo = 
+            (new DateTimeImmutable())->modify(sprintf("-%s days", $this->daysAgo));
+        
+        return 
+            $candidate instanceof User && 
+            $candidate->createdAt() >= $daysAgo;
+    }
+}
+```
+
+```php
+<?php
+
+$user = new User(/** ... */);
+
+(new UserIsRecent(30))->isSatisfiedBy($user); // (bool)
+rule(UserIsRecent::class, 30)->isSatisfiedBy($user); // (bool)
+
+anyOf()->rule(UserIsRecent::class)->method('getAge', between(20, 30))->isSatisfiedBy($user); // (bool) 
+
+```
