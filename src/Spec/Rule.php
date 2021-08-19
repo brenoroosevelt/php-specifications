@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BrenoRoosevelt\Specification\Spec;
 
 use BrenoRoosevelt\Specification\Specification;
+use Respect\Validation\Validatable;
 
 /**
  * converts anything to the spec.
@@ -49,6 +50,11 @@ class Rule implements Specification
 
         if ($rule instanceof Specification) {
             return $rule->isSatisfiedBy($candidate);
+        }
+
+        // Respect/Validation
+        if ($rule instanceof Validatable) {
+            return $rule->validate($candidate);
         }
 
         if (is_callable($rule)) {

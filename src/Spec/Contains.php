@@ -47,7 +47,7 @@ class Contains implements Specification
             return $haystack->contains($needle);
         }
 
-        if (is_iterable($haystack)) {
+        if (\BrenoRoosevelt\Specification\is_iterable($haystack)) {
             foreach ($haystack as $value) {
                 if ($strict && $value === $needle){
                     return true;
