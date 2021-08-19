@@ -69,6 +69,27 @@ if (! function_exists('BrenoRoosevelt\Specification\oneOf')) {
     }
 }
 
+if (! function_exists('BrenoRoosevelt\Specification\_and')) {
+    function _and(): Chained
+    {
+        return allOf();
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\_or')) {
+    function _or(): Chained
+    {
+        return anyOf();
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\_xor')) {
+    function _xor(): Chained
+    {
+        return oneOf();
+    }
+}
+
 if (! function_exists('BrenoRoosevelt\Specification\rule')) {
     function rule($rule, ...$args): Specification
     {

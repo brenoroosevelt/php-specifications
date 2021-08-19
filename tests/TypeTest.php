@@ -7,7 +7,6 @@ class TypeTest extends TestCase
 {
     public function testTypes()
     {
-        $this->assertThat();
         $this->assertTrue(true);
     }
 }
