@@ -46,6 +46,7 @@ Function | Specification |
 `lessThan($value)`          | less than to the given value (using `<`)
 `lessThanEqual($value)`     | less than or equal to to the given value (using `<=`)
 `startsWith($prefix, bool $case = true)`| string starts with another given string
+`between($i, $f)`                   | `>=` and `<=` 
 `endsWith($suffix, bool $case = true)`         | string ends with another given string
 `contains($value, bool $strict = true)`         | evaluates if the candidate contains a given value (can be used for strings or arrays)
 `in($values, bool $trict = true)`               | evaluates if the candidate exists in a list 
@@ -77,5 +78,30 @@ Function               | Operator | Example
 
 Chained specifications will be evaluated with the corresponding operator.
 
-### Transversal
+### Transversal Specifications for iterables
+
+These especial specifications iterate candidates and evaluate their elements.
+
+Function               | Operator | Example
+-----|----|----
+`all(Specification $spcification)`                  | Check that all of elements match with the specification | `all(property('age', lessThan(5)))`
+`any(Specification $spcification)`                  | Check that any of elements match with the specification | `any(method('getAge', lessThan(5)))`
+`atLeast(int $count, Specification $spcification)`               | Check that at least the count number of elements match with the specification | `atLeast(2, lessThan(5))`
+`atMost(int $count, Specification $spcification)`               | Check that at most the count number of elements match with the specification | `atMost(5, length(equals(10)))`
+`exactly(int $count, Specification $spcification)`               | Check that exactly the count number of elements match with the specification | `exactly(3, key('age', lessThan(5)))`
+`none(Specification $spcification)`     | Check that exactly the none of elements match with the specification | `none(key('age', between(5, 15)))`  
+
+### Selectors
+
+These special specifications extract candidate values and then evaluate the specification.
+
+Function               | Operator | Example
+-----|----|----
+`key(string $key, Specification $spcification)`                  | Extract value using key/index | `key('age', greaterThan(10)`
+`method(string|array $method, Specification $spcification)`                  | Extract value using method  | `method(['getPrice', $tax]', lessThan(200.50)`
+`property(string $property, Specification $spcification)`               | Extract value from property| `property('name', length(between(2, 10))`
+`count(Specification $spcification)`               | Extract count from countable candidates | `count(equals(10))`
+`length(Specification $spcification)`               | Extract the length from string candidates | `length(equals(10))`
+
+
 
