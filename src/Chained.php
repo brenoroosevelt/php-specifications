@@ -5,7 +5,6 @@ namespace BrenoRoosevelt\Specification;
 
 use BrenoRoosevelt\Specification\Spec\AllOf;
 use BrenoRoosevelt\Specification\Spec\AnyOf;
-use BrenoRoosevelt\Specification\Spec\Between;
 use BrenoRoosevelt\Specification\Spec\OneOf;
 
 class Chained implements Specification
@@ -87,9 +86,14 @@ class Chained implements Specification
         return $this->append(notIn($v, $strict));
     }
 
-    public function isNull(): self
+    public function isTrue(): self
     {
-        return $this->append(isNull());
+        return $this->append(isTrue());
+    }
+
+    public function isFalse(): self
+    {
+        return $this->append(isFalse());
     }
 
     public function isNotNull(): self
@@ -105,6 +109,16 @@ class Chained implements Specification
     public function isNotEmpty(): self
     {
         return $this->append(IsNotEmpty());
+    }
+
+    public function isInstanceOf($classOrObject): self
+    {
+        return $this->append(isInstanceOf($classOrObject));
+    }
+
+    public function isType($type): self
+    {
+        return $this->append(isType($type));
     }
 
     public function equals($v): self
@@ -160,6 +174,16 @@ class Chained implements Specification
     public function key($key, Specification $constraint): self
     {
         return $this->append(key($key, $constraint));
+    }
+
+    public function keyExists($key): self
+    {
+        return $this->append(keyExists($key));
+    }
+
+    public function keyNotExists($key): self
+    {
+        return $this->append(keyNotExists($key));
     }
 
     public function property($key, Specification $constraint): self

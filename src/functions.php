@@ -15,8 +15,13 @@ use BrenoRoosevelt\Specification\Spec\GreaterThan;
 use BrenoRoosevelt\Specification\Spec\GreaterThanEqual;
 use BrenoRoosevelt\Specification\Spec\In;
 use BrenoRoosevelt\Specification\Spec\IsEmpty;
+use BrenoRoosevelt\Specification\Spec\IsFalse;
+use BrenoRoosevelt\Specification\Spec\IsInstanceOf;
 use BrenoRoosevelt\Specification\Spec\IsNull;
+use BrenoRoosevelt\Specification\Spec\IsTrue;
+use BrenoRoosevelt\Specification\Spec\IsType;
 use BrenoRoosevelt\Specification\Spec\Key;
+use BrenoRoosevelt\Specification\Spec\KeyExists;
 use BrenoRoosevelt\Specification\Spec\Length;
 use BrenoRoosevelt\Specification\Spec\LessThan;
 use BrenoRoosevelt\Specification\Spec\LessThanEqual;
@@ -113,6 +118,18 @@ if (! function_exists('BrenoRoosevelt\Specification\notContains')) {
     }
 }
 
+if (! function_exists('BrenoRoosevelt\Specification\isTrue')) {
+    function isTrue(): Specification {
+        return new IsTrue();
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\isFalse')) {
+    function isFalse(): Specification {
+        return new IsFalse();
+    }
+}
+
 if (! function_exists('BrenoRoosevelt\Specification\isNull')) {
     function isNull(): Specification {
         return new IsNull();
@@ -134,6 +151,18 @@ if (! function_exists('BrenoRoosevelt\Specification\isEmpty')) {
 if (! function_exists('BrenoRoosevelt\Specification\isNotEmpty')) {
     function isNotEmpty(): Specification {
         return new Not(new IsEmpty());
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\isInstanceOf')) {
+    function isInstanceOf($objectOrClass): Specification {
+        return new IsInstanceOf($objectOrClass);
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\isType')) {
+    function isType($type): Specification {
+        return new IsType($type);
     }
 }
 
@@ -200,6 +229,18 @@ if (! function_exists('BrenoRoosevelt\Specification\valueOf')) {
 if (! function_exists('BrenoRoosevelt\Specification\key')) {
     function key($key, Specification $constraint): Specification {
         return new Key($key, $constraint);
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\keyExists')) {
+    function keyExists($key): Specification {
+        return new KeyExists($key);
+    }
+}
+
+if (! function_exists('BrenoRoosevelt\Specification\keyNotExists')) {
+    function keyNotExists($key): Specification {
+        return not(keyExists($key));
     }
 }
 

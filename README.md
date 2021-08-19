@@ -33,10 +33,14 @@ The functions below evaluate a candidate using the following specifications:
 
 Function | Specification |
 ---------------------------------------- | ----------------------------------
-`isNull()`                  | is (using `is_null()`)
-`isNotNull()`               | is not `!is_null()`
+`isTrue()`                  | is true (using `=== true`)
+`isFalse()`                  | is false (using `=== false`)
+`isNull()`                  | is null (using `is_null()`)
+`isNotNull()`               | is not null `!is_null()`
 `isEmpty()`                 | is empty (using `empty()`)
 `isNotEmpty()`              | not empty (using `empty()`)
+`isInstanceOf()`              | is instance of (using `instanceof`)
+`isType()`              | is type (using `gettype()`)
 `equals($value)`            | equals to the given value (using `==`)
 `notEquals($value)`         | not equals to the given value (using `!=`)
 `same($value)`              | identical to the given value (using `===`)
@@ -45,8 +49,8 @@ Function | Specification |
 `greaterThanEqual($value)`  | greater than or equal to the given value (using `>=`)
 `lessThan($value)`          | less than to the given value (using `<`)
 `lessThanEqual($value)`     | less than or equal to to the given value (using `<=`)
+`between($i, $f)`                   | `>=` and `<=`
 `startsWith($prefix, bool $case = true)`| string starts with another given string
-`between($i, $f)`                   | `>=` and `<=` 
 `endsWith($suffix, bool $case = true)`         | string ends with another given string
 `contains($value, bool $strict = true)`         | evaluates if the candidate contains a given value (can be used for strings or arrays)
 `in($values, bool $trict = true)`               | evaluates if the candidate exists in a list 
@@ -54,6 +58,7 @@ Function | Specification |
 `false()`                   | Always `false` 
 `spec(Specification $spec)`                   | proxy another specification 
 `rule($rule)`                   | callable or specification class name
+
 
 ### Operators
 
@@ -135,4 +140,13 @@ $user = new User(/** ... */);
 (new RecentUser(30))->isSatisfiedBy($user); // (bool)
 rule(RecentUser::class, 30)->isSatisfiedBy($user); // (bool)
 anyOf()->rule(RecentUser::class)->method('getCategory', in(['premium']))->isSatisfiedBy($user); // (bool)
+```
+
+#### Inline Specifications
+
+```php
+<?php
+
+rule(fn($candidate) => $candidate->isActive());
+
 ```

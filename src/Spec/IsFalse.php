@@ -5,10 +5,10 @@ namespace BrenoRoosevelt\Specification\Spec;
 
 use BrenoRoosevelt\Specification\Specification;
 
-class IsNull implements Specification
+class IsFalse implements Specification
 {
     public function isSatisfiedBy($candidate): bool
     {
-        return is_null($candidate);
+        return $candidate === false;
     }
 }
