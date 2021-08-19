@@ -39,8 +39,8 @@ Function | Specification |
 `isNotNull()`               | is not null `!is_null()`
 `isEmpty()`                 | is empty (using `empty()`)
 `isNotEmpty()`              | not empty (using `empty()`)
-`isInstanceOf()`              | is instance of (using `instanceof`)
-`isType()`              | is type (using `gettype()`)
+`isInstanceOf($classOrObject)`              | is instance of (using `instanceof`)
+`isType($type)`              | is type (using `gettype()`)
 `equals($value)`            | equals to the given value (using `==`)
 `notEquals($value)`         | not equals to the given value (using `!=`)
 `same($value)`              | identical to the given value (using `===`)
