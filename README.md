@@ -50,8 +50,6 @@ Function | Specification |
 `endsWith($suffix, bool $case = true)`         | string ends with another given string
 `contains($value, bool $strict = true)`         | evaluates if the candidate contains a given value (can be used for strings or arrays)
 `in($values, bool $trict = true)`               | evaluates if the candidate exists in a list 
-`keyExists($key)`           | key exists in a candidate
-`keyNotExists($key)`        | key does not exist in a candidate
 `true()`                    | Always `true` 
 `false()`                   | Always `false` 
 
@@ -78,7 +76,7 @@ Function               | Operator | Example
 
 Chained specifications will be evaluated with the corresponding operator.
 
-### Transversal Specifications for iterables
+### Transverse Specifications for iterables
 
 These especial specifications iterate candidates and evaluate their elements.
 
