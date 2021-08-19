@@ -78,7 +78,7 @@ Chained specifications will be evaluated with the corresponding operator.
 
 ### Transverse Specifications for iterables
 
-These especial specifications iterate candidates and evaluate their elements.
+Often used with collections, these especial specifications iterate candidates and evaluate their elements.
 
 Function               | Operator | Example
 -----|----|----
@@ -87,7 +87,7 @@ Function               | Operator | Example
 `atLeast(int $count, Specification $spcification)`               | Check that at least the count number of elements match with the specification | `atLeast(2, lessThan(5))`
 `atMost(int $count, Specification $spcification)`               | Check that at most the count number of elements match with the specification | `atMost(5, length(equals(10)))`
 `exactly(int $count, Specification $spcification)`               | Check that exactly the count number of elements match with the specification | `exactly(3, key('age', lessThan(5)))`
-`none(Specification $spcification)`     | Check that exactly the none of elements match with the specification | `none(key('age', between(5, 15)))`  
+`none(Specification $spcification)`     | Check that none of elements match with the specification | `none(key('age', between(5, 15)))`
 
 ### Selectors
 
