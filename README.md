@@ -32,7 +32,7 @@ interface Specification
 The functions below evaluate a candidate using the following specifications:
 
 Function | Specification |
---------------------------- | --------------------------------------------------------
+---------------------------------------- | ----------------------------------
 `isNull()`                  | is (using `is_null()`)
 `isNotNull()`               | is not `!is_null()`
 `isEmpty()`                 | is empty (using `empty()`)
@@ -70,10 +70,10 @@ Specifications can be chained using the following function:
 
 Function               | Operator | Example
 -----|----|----
-`allOf()`                  | `AND` | allOf()->isNull()->isNotEmpty() ...
-`anyOf()`               | `OR` |  anyOf()->isNull()->equals(2) ...
-`oneOf()`               | `XOR` | oneOf()->greaterThan(1)->isEmpty() ...
-`noneOf()`               | none of | noneOf()->isNotNull()->contains('active') ...
+`allOf()`                  | `AND` | `allOf()->isNull()->isNotEmpty() ...`
+`anyOf()`               | `OR` |  `anyOf()->isNull()->equals(2) ...`
+`oneOf()`               | `XOR` | `oneOf()->greaterThan(1)->isEmpty() ...`
+`noneOf()`               | none of | `noneOf()->isNotNull()->contains('active') ...`
 
 Chained specifications will be evaluated with the corresponding operator.
 
