@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BrenoRoosevelt\Specification\Spec;
 
 use BrenoRoosevelt\Specification\Specification;
+use function \BrenoRoosevelt\Specification\is_iterable;
 
 class All implements Specification
 {

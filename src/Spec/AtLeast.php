@@ -20,7 +20,7 @@ class AtLeast implements Specification
 
     public function isSatisfiedBy($candidate): bool
     {
-        if (!is_iterable($candidate)) {
+        if (!\BrenoRoosevelt\Specification\is_iterable($candidate)) {
             return false;
         }
 

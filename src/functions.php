@@ -297,8 +297,15 @@ if (! function_exists('BrenoRoosevelt\Specification\match')) {
 }
 
 if (! function_exists('BrenoRoosevelt\Specification\match')) {
-    function when($candidate, Specification $specification, callable $operation) {
+    function when($candidate, Specification $specification, callable $operation)
+    {
         return $specification->isSatisfiedBy($candidate) ? $operation($candidate) : null;
     }
 }
 
+if ( !function_exists('BrenoRoosevelt\Specification\is_iterable')) {
+    function is_iterable($obj): bool
+    {
+        return is_array($obj) || $obj instanceof \Traversable;
+    }
+}
