@@ -98,7 +98,7 @@ These special specifications extract candidate values and then evaluate the spec
 Function               | Operator | Example
 -----|----|----
 `key(string $key, Specification $spcification)`                  | Extract value using key/index | `key('age', greaterThan(10)`
-`method(string|array $method, Specification $spcification)`                  | Extract value using method  | `method(['getPrice', $tax]', lessThan(200.50)`
+`method(string/array $method, Specification $spcification)`                  | Extract value using method  | `method(['getPrice', $tax]', lessThan(200.50)`
 `property(string $property, Specification $spcification)`               | Extract value from property| `property('name', length(between(2, 10))`
 `count(Specification $spcification)`               | Extract count from countable candidates | `count(equals(10))`
 `length(Specification $spcification)`               | Extract the length from string candidates | `length(equals(10))`
