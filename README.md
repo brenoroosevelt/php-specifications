@@ -14,7 +14,7 @@ composer require brenoroosevelt/php-specifications
 
 ## Definition
  
-Specifications ara classes that implements the interface [`Specification`](src/Specification.php): 
+Specifications are classes that implements the interface [`Specification`](src/Specification.php): 
 ```php
 <?php
 declare(strict_types=1);
@@ -23,12 +23,6 @@ namespace BrenoRoosevelt\Specification;
 
 interface Specification
 {
-    /**
-     * Evaluates the candidate with the specification
-     *
-     * @param $candidate
-     * @return bool
-     */
     public function isSatisfiedBy($candidate): bool;
 }
 ```
@@ -75,7 +69,7 @@ class `NoneOf(Specification ...$specification)`               | check that none 
 Specifications can be chained using the following function:
 
 Function               | Operator | Example
------|----
+-----|----|----
 `allOf()`                  | `AND` | allOf()->isNull()->isNotEmpty() ...
 `anyOf()`               | `OR` |  anyOf()->isNull()->equals(2) ...
 `oneOf()`               | `XOR` | oneOf()->greaterThan(1)->isEmpty() ...
