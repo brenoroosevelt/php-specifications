@@ -9,15 +9,22 @@ class Between implements Specification
 {
     private $i;
     private $f;
+    private $boundaries;
 
-    public function __construct($i, $f)
+    public function __construct($i, $f, bool $boundaries = true)
     {
         $this->i = $i;
         $this->f = $f;
+        $this->boundaries = $boundaries;
     }
 
     public function isSatisfiedBy($candidate): bool
     {
-        return (new AllOf(new GreaterThanEqual($this->i), new LessThanEqual($this->f)))->isSatisfiedBy($candidate);
+        $rule =
+            $this->boundaries ?
+                new AllOf(new GreaterThanEqual($this->i), new LessThanEqual($this->f)) :
+                new AllOf(new GreaterThan($this->i), new LessThan($this->f));
+
+        return $rule->isSatisfiedBy($candidate);
     }
 }

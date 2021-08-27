@@ -236,8 +236,8 @@ if (! function_exists('BrenoRoosevelt\Specification\greaterThanEqual')) {
 }
 
 if (! function_exists('BrenoRoosevelt\Specification\between')) {
-    function between($i, $f): Specification {
-        return new Between($i, $f);
+    function between($i, $f, bool $boundaries = true): Specification {
+        return new Between($i, $f, $boundaries);
     }
 }
 

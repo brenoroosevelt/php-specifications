@@ -16,7 +16,9 @@
   ],
   "require": {
     "php": ">=7.0",
-    "respect/validation": "^2"
+    "respect/validation": "^2",
+    "nesbot/carbon": "@stable",
+    "ext-calendar": "*"
   },
   "require-dev": {
     "phpstan/phpstan": "^0.12.90",

@@ -161,9 +161,9 @@ class Chained implements Specification
         return $this->append(greaterThanEqual($v));
     }
 
-    public function between($i, $f): self
+    public function between($i, $f, bool $boundaries = true): self
     {
-        return $this->append(between($i, $f));
+        return $this->append(between($i, $f, $boundaries));
     }
 
     public function valueOf($key, Specification $constraint): self
