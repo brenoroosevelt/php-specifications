@@ -7,26 +7,6 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-/**
- * @method static bool sameYear($d1, $d2 = null)
- * @method static bool sameMonth($d1, $d2 = null, bool $ofSameYear = true)
- * @method static bool sameDay($d1, $d2 = null)
- * @method static bool sameYearIso($d1, $d2 = null)
- * @method static bool sameHour($d1, $d2 = null)
- * @method static bool sameMinute($d1, $d2 = null)
- * @method static bool sameSecond($d1, $d2 = null)
- * @method static bool sameMicrosecond($d1, $d2 = null)
- * @method static bool sameTime($d1, $d2 = null)
- * @method static bool sameDayOfWeek($d1, $d2 = null)
- * @method static bool sameDayOfYear($d1, $d2 = null, bool $ofSameYear = true)
- * @method static bool sameWeekOfYear($d1, $d2 = null, bool $ofSameYear = true)
- * @method static bool sameDaysInMonth($d1, $d2 = null)
- * @method static bool sameTimestamp($d1, $d2 = null)
- * @method static bool sameBirthday($d1, $d2 = null, bool $ofSameYear = true)
- * @method static bool sameDate($d1, $d2 = null)
- * @method static bool sameQuarterOfYear($d1, $d2 = null, bool $ofSameYear = true)
- * @method static bool sameHalfOfYear($d1, $d2 = null, bool $ofSameYear = true)
- */
 class TimeUtil
 {
     const Monday = 1;
@@ -179,13 +159,7 @@ class TimeUtil
     public static function startOfMonth($date = null): DateTimeImmutable
     {
         $dateTime = self::immutable($date);
-        $dateTime =
-            $dateTime->setDate(
-                (int) $dateTime->format('Y'),
-                (int) $dateTime->format('m'),
-                1
-            );
-
+        $dateTime = $dateTime->setDate((int) $dateTime->format('Y'), (int) $dateTime->format('m'), 1);
         return self::startOfDay($dateTime);
     }
 
@@ -537,6 +511,74 @@ class TimeUtil
         return self::year($date) - 1;
     }
 
+    public static function formatEquals($date1, $date2, string $format): bool
+    {
+        return self::immutable($date1)->format($format) === self::immutable($date2)->format($format);
+    }
+
+    public static function sameYear($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['year']);
+    }
+
+    public static function sameMonth($date1, $date2 = null, bool $ofSameYear = true): bool
+    {
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::formatEquals($date1, $date2, self::$formats['month']) && $year1 === $year2;
+    }
+
+    public static function sameDay($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['day']);
+    }
+
+    public static function sameHour($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['hour']);
+    }
+
+    public static function sameMinute($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['minute']);
+    }
+
+    public static function sameSecond($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['second']);
+    }
+
+    public static function sameMicrosecond($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['microsecond']);
+    }
+
+    public static function sameTime($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['time']);
+    }
+
+    public static function sameDayOfWeek($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['dayOfWeek']);
+    }
+
+    public static function sameDayOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['dayOfWeek']);
+    }
+
+    /**
+     * @method static bool sameDayOfWeek($d1, $d2 = null)
+     * @method static bool sameDayOfYear($d1, $d2 = null, bool $ofSameYear = true)
+     * @method static bool sameWeekOfYear($d1, $d2 = null, bool $ofSameYear = true)
+     * @method static bool sameDaysInMonth($d1, $d2 = null)
+     * @method static bool sameTimestamp($d1, $d2 = null)
+     * @method static bool sameBirthday($d1, $d2 = null, bool $ofSameYear = true)
+     * @method static bool sameDate($d1, $d2 = null)
+     * @method static bool sameQuarterOfYear($d1, $d2 = null, bool $ofSameYear = true)
+     * @method static bool sameHalfOfYear($d1, $d2 = null, bool $ofSameYear = true)
+     */
     public static function __callStatic($name, $arguments)
     {
         $date = self::immutable(array_shift($arguments));
@@ -881,16 +923,10 @@ class TimeUtil
     protected static function cyclicBetween(int $i, int $f, int $value, bool $boundaries = true): bool
     {
         if ($i > $f) {
-            return
-                $boundaries ?
-                    $value >= $i || $value <= $f :
-                    $value > $i || $value < $f ;
+            return $boundaries ? $value >= $i || $value <= $f : $value > $i || $value < $f ;
         }
 
-        return
-            $boundaries ?
-                $value >= $i && $value <= $f :
-                $value > $i && $value < $f ;
+        return $boundaries ? $value >= $i && $value <= $f : $value > $i && $value < $f ;
     }
 
     public static function monthBetween(int $i, int $f, $date = null, bool $boundaries = true): bool
@@ -901,14 +937,12 @@ class TimeUtil
 
     public static function dayBetween(int $i, int $f, $date = null, bool $boundaries = true): bool
     {
-        $day = self::day($date);
-        return self::cyclicBetween($i, $f, $day, $boundaries);
+        return self::cyclicBetween($i, $f, self::day($date), $boundaries);
     }
 
     public static function dayOfWeekBetween(int $i, int $f, $date = null, bool $boundaries = true): bool
     {
-        $dayOfWeek = self::dayOfWeek($date);
-        return self::cyclicBetween($i, $f, $dayOfWeek, $boundaries);
+        return self::cyclicBetween($i, $f, self::dayOfWeek($date), $boundaries);
     }
 
     public static function timeBetween(string $i, string $f, $date = null, bool $boundaries = true): bool
