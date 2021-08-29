@@ -136,7 +136,6 @@ class TimeUtil
     public static function startOfWeek($date = null, int $startOfWeek = self::Monday): DateTimeImmutable
     {
         $dateTime = self::immutable($date);
-        var_dump(self::dayOfWeek($dateTime));
         if (self::dayOfWeek($dateTime) !== $startOfWeek) {
             $dayOfWeekName = self::weeks()[$startOfWeek];
             $dateTime = $dateTime->modify("last $dayOfWeekName");
@@ -565,39 +564,52 @@ class TimeUtil
 
     public static function sameDayOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
-        return self::formatEquals($date1, $date2, self::$formats['dayOfWeek']);
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::formatEquals($date1, $date2, self::$formats['month']) && $year1 === $year2;
     }
 
-    /**
-     * @method static bool sameDayOfWeek($d1, $d2 = null)
-     * @method static bool sameDayOfYear($d1, $d2 = null, bool $ofSameYear = true)
-     * @method static bool sameWeekOfYear($d1, $d2 = null, bool $ofSameYear = true)
-     * @method static bool sameDaysInMonth($d1, $d2 = null)
-     * @method static bool sameTimestamp($d1, $d2 = null)
-     * @method static bool sameBirthday($d1, $d2 = null, bool $ofSameYear = true)
-     * @method static bool sameDate($d1, $d2 = null)
-     * @method static bool sameQuarterOfYear($d1, $d2 = null, bool $ofSameYear = true)
-     * @method static bool sameHalfOfYear($d1, $d2 = null, bool $ofSameYear = true)
-     */
-    public static function __callStatic($name, $arguments)
+    public static function sameWeekOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
-        $date = self::immutable(array_shift($arguments));
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::formatEquals($date1, $date2, self::$formats['weekOfYear']) && $year1 === $year2;
+    }
 
-        if (stripos($name, 'same') === 0 && strlen($name) > 4) {
-            $_name = lcfirst(substr($name, 4));
-            $date2 = self::immutable(array_shift($arguments));
-            $arg3 = array_shift($arguments);
-            $ofSameYear = $arg3 === null ? true : $arg3;
+    public static function sameDaysInMonth($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['daysInMonth']);
+    }
 
-            $year1 = $ofSameYear ? self::year($date) : null;
-            $year2 = $ofSameYear ? self::year($date2): null;
-            $result1 = forward_static_call_array([__CLASS__, $_name], [$date]);
-            $result2 = forward_static_call_array([__CLASS__, $_name], [$date2]);
+    public static function sameTimestamp($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['timestamp']);
+    }
 
-            return $result1 === $result2 && $year1 === $year2;
-        }
+    public static function sameBirthday($date1, $date2 = null, bool $ofSameYear = true): bool
+    {
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::formatEquals($date1, $date2, self::$formats['birthday']) && $year1 === $year2;
+    }
 
-        return null;
+    public static function sameDate($date1, $date2 = null): bool
+    {
+        return self::formatEquals($date1, $date2, self::$formats['date']);
+    }
+
+    public static function sameQuarterOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    {
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::quarterOfYear($date1) === self::quarterOfYear($date2) && $year1 === $year2;
+    }
+
+    public static function sameHalfOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    {
+        $year1 = $ofSameYear ? self::year($date1) : null;
+        $year2 = $ofSameYear ? self::year($date2): null;
+        return self::halfOfYear($date1) === self::halfOfYear($date2) && $year1 === $year2;
     }
 
     public static function isBefore($before, $date): bool
