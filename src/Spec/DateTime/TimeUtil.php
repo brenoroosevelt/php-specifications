@@ -8,55 +8,6 @@ use DateTimeImmutable;
 use DateTimeInterface;
 
 /**
- * @method static int year($date = null)
- * @method static int yearIso($date = null)
- * @method static int month($date = null)
- * @method static int day($date = null)
- * @method static int hour($date = null)
- * @method static int minute($date = null)
- * @method static int second($date = null)
- * @method static int microsecond($date = null)
- * @method static int time($date = null)
- * @method static int dayOfWeek($date = null)
- * @method static int dayOfYear($date = null)
- * @method static int weekOfYear($date = null)
- * @method static int daysInMonth($date = null)
- * @method static int timestamp($date = null)
- * @method static int birthday($date = null)
- * @method static int date($date = null)
- * @method static int quarterOfYear($date = null)
- * @method static int halfOfYear($date = null)
- * @method static int lastYear($date = null)
- * @method static int nextYear($date = null)
- * @method static int nextMonth($date = null)
- * @method static int lastMonth($date = null)
- *
- * @method static bool isLeapYear($date = null)
- * @method static bool isWeekday($date = null)
- * @method static bool isWeekend($date = null)
- * @method static bool isMonday($date = null)
- * @method static bool isTuesday($date = null)
- * @method static bool isWednesday($date = null)
- * @method static bool isThursday($date = null)
- * @method static bool isFriday($date = null)
- * @method static bool isSaturday($date = null)
- * @method static bool isSunday($date = null)
- * @method static bool isFirstHalfOfYear($date = null)
- * @method static bool isSecondHalfOfYear($date = null)
- * @method static bool isToday($date)
- * @method static bool isYesterday($date)
- * @method static bool isTomorrow($date)
- * @method static bool isLastDayOfMonth($date = null)
- * @method static bool isLastDayOfYear($date = null)
- * @method static bool isFirstDayOfYear($date = null)
- * @method static bool isFirstDayOfMonth($date = null)
- * @method static bool isAM($date = null)
- * @method static bool isPM($date = null)
- * @method static bool isMidway($date = null)
- * @method static bool isMidnight($date = null)
- * @method static bool isEndOfDay($date = null)
- * @method static bool isStartOfDay($date = null)
- *
  * @method static bool sameYear($d1, $d2 = null)
  * @method static bool sameMonth($d1, $d2 = null, bool $ofSameYear = true)
  * @method static bool sameDay($d1, $d2 = null)
@@ -86,12 +37,42 @@ class TimeUtil
     const Saturday = 6;
     const Sunday = 7;
 
+    const January = 1;
+    const February  = 2;
+    const March = 3;
+    const April = 4;
+    const May = 5;
+    const June = 6;
+    const July = 7;
+    const August = 8;
+    const September = 9;
+    const October = 10;
+    const November = 11;
+    const December = 12;
+
+    const StartOfDay = '00:00:00';
+    const EndOfDay = '23:59:59';
+    const Midday = '12:00:00';
+    const Midnight = '00:00:00';
+
+    const HOURS_PER_DAY = 24;
+    const MINUTES_PER_HOUR = 60;
+    const SECONDS_PER_MINUTE = 60;
+    const MICROS_PER_SECOND = 1000000;
+
+    const FIRST_MONTH = 1;
+    const MONTHS_PER_YEAR = 12;
+
+    public static $weekend = [
+        self::Saturday,
+        self::Sunday
+    ];
+
     protected static $now = 'now';
     protected static $nowTz = null;
 
     public static $formats = [
         'year' => 'Y',
-        'yearIso' => 'o',
         'month' => 'n',
         'day' => 'j',
         'hour' => 'G',
@@ -104,14 +85,19 @@ class TimeUtil
         'daysInMonth' => 't',
         'timestamp' => 'U',
         'date' => 'Ymd',
-        'birthday' => 'md', // move
-        'time' => 'His', // move
+        'birthday' => 'md',
+        'time' => 'H:i:s',
     ];
 
     public static function setNow($now, $tz = null)
     {
         self::$now = $now ?? 'now';
         self::$nowTz = $tz;
+    }
+
+    public static function setWeekend(array $weekend)
+    {
+        self::$weekend = array_filter($weekend, 'is_integer');
     }
 
     public static function resetNow()
@@ -130,24 +116,36 @@ class TimeUtil
         return new DateTime(self::$now, $tz ?? self::$nowTz);
     }
 
+    public static function timeZone($tz): \DateTimeZone
+    {
+        return new \DateTimeZone($tz);
+    }
+
     public static function today($tz = null): DateTimeImmutable
     {
-        return self::now($tz)->setTime(0, 0, 0,0);
+        return self::startOfDay(self::now($tz));
     }
 
     public static function tomorrow($tz = null): DateTimeImmutable
     {
-        return self::now($tz)->setTime(0, 0, 0,0)->modify('+1 days');
+        return self::startOfDay(self::now($tz)->modify('+1 days'));
     }
 
     public static function yesterday($tz = null): DateTimeImmutable
     {
-        return self::now($tz)->setTime(0, 0, 0,0)->modify('-1 days');
+        return self::startOfDay(self::now($tz)->modify('-1 days'));
     }
 
     public static function endOfDay($date = null): DateTimeImmutable
     {
-        return self::immutable($date)->setTime(23, 59, 59, 999999);
+        return
+            self::immutable($date)
+                ->setTime(
+                    self::HOURS_PER_DAY - 1,
+                    self::MINUTES_PER_HOUR - 1,
+                    self::SECONDS_PER_MINUTE -1,
+                    self::MICROS_PER_SECOND -1
+                );
     }
 
     public static function startOfDay($date = null): DateTimeImmutable
@@ -206,16 +204,13 @@ class TimeUtil
 
     public static function startOfYear($dateOrYear = null): DateTimeImmutable
     {
+        $firstMonth = self::FIRST_MONTH;
+        $firstDay = 1;
         if (is_integer($dateOrYear)) {
-            $date = self::immutable("$dateOrYear-01-01");
+            $date = self::immutable("$dateOrYear-$firstMonth-$firstDay");
         } else {
             $date = self::immutable($dateOrYear);
-            $date =
-                $date->setDate(
-                    (int) $date->format('Y'),
-                    1,
-                    1
-                );
+            $date = $date->setDate((int) $date->format('Y'), $firstMonth, $firstDay);
         }
 
         return self::startOfDay($date);
@@ -223,124 +218,328 @@ class TimeUtil
 
     public static function endOfYear($dateOrYear = null): DateTimeImmutable
     {
+        $lastMonth = self::MONTHS_PER_YEAR;
+        $lastDay = 31;
         if (is_integer($dateOrYear)) {
-            $date = self::immutable("$dateOrYear-12-31");
+            $date = self::immutable("$dateOrYear-$lastMonth-$lastDay");
         } else {
             $date = self::immutable($dateOrYear);
-            $date =
-                $date->setDate(
-                    (int) $date->format('Y'),
-                    12,
-                    31
-                );
+            $date = $date->setDate((int) $date->format('Y'), $lastMonth, $lastDay);
         }
 
         return self::endOfDay($date);
     }
 
+    public static function year($date = null): int
+    {
+        return (int) self::immutable($date)->format('Y');
+    }
+
+    public static function month($date = null): int
+    {
+        return (int) self::immutable($date)->format('n');
+    }
+
+    public static function day($date = null): int
+    {
+        return (int) self::immutable($date)->format('j');
+    }
+
+    public static function hour($date = null): int
+    {
+        return (int) self::immutable($date)->format('G');
+    }
+
+    public static function minute($date = null): int
+    {
+        return (int) self::immutable($date)->format('i');
+    }
+
+    public static function second($date = null): int
+    {
+        return (int) self::immutable($date)->format('s');
+    }
+
+    public static function microsecond($date = null): int
+    {
+        return (int) self::immutable($date)->format('u');
+    }
+
+    public static function micro($date = null): int
+    {
+        return (int) self::microsecond($date);
+    }
+
+    public static function dayOfWeek($date = null): int
+    {
+        return (int) self::immutable($date)->format('N');
+    }
+
+    public static function dayOfYear($date = null): int
+    {
+        return (int) self::immutable($date)->format('z');
+    }
+
+    public static function weekOfYear($date = null): int
+    {
+        return (int) self::immutable($date)->format('W');
+    }
+
+    public static function daysInMonth($date = null): int
+    {
+        return (int) self::immutable($date)->format('t');
+    }
+
+    public static function timestamp($date = null): int
+    {
+        return (int) self::immutable($date)->format('U');
+    }
+
+    public static function date($date = null): int
+    {
+        return (int) self::immutable($date)->format('Ymd');
+    }
+
+    public static function birthday($date = null): string
+    {
+        return self::immutable($date)->format('md');
+    }
+
+    public static function time($date = null, $micro = false): string
+    {
+        return self::immutable($date)->format($micro? 'H:i:s.u' : 'H:i:s');
+    }
+
+    public static function quarterOfYear($date = null): int
+    {
+        return (int) ceil(self::month($date) / 3);
+    }
+
+    public static function halfOfYear($date = null): int
+    {
+        return (int) ceil(self::month($date) / 6);
+    }
+
+    public static function isFirstHalfOfYear($date = null): bool
+    {
+        return self::halfOfYear($date) === 1;
+    }
+
+    public static function isSecondHalfOfYear($date = null): bool
+    {
+        return self::halfOfYear($date) === 2;
+    }
+
+    public static function isLeapYear($date = null): bool
+    {
+        return $date->format('L') === 1;
+    }
+
+    public static function isWeekday($date = null): bool
+    {
+        return !self::isWeekend($date);
+    }
+
+    public static function isWeekend($date = null): bool
+    {
+        return in_array(self::dayOfWeek($date), self::$weekend);
+    }
+
+    public static function isSunday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Sunday;
+    }
+
+    public static function isMonday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Monday;
+    }
+
+    public static function isTuesday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Tuesday;
+    }
+
+    public static function isWednesday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Wednesday;
+    }
+
+    public static function isThursday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Thursday;
+    }
+
+    public static function isFriday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Friday;
+    }
+
+    public static function isSaturday($date = null): bool
+    {
+        return self::dayOfWeek($date) === self::Saturday;
+    }
+
+    public static function isJanuary($date = null): bool
+    {
+        return self::month($date) === self::January;
+    }
+
+    public static function isFebruary($date = null): bool
+    {
+        return self::month($date) === self::February;
+    }
+
+    public static function isMarch($date = null): bool
+    {
+        return self::month($date) === self::March;
+    }
+
+    public static function isApril($date = null): bool
+    {
+        return self::month($date) === self::April;
+    }
+
+    public static function isMay($date = null): bool
+    {
+        return self::month($date) === self::May;
+    }
+
+    public static function isJune($date = null): bool
+    {
+        return self::month($date) === self::June;
+    }
+
+    public static function isJuly($date = null): bool
+    {
+        return self::month($date) === self::July;
+    }
+
+    public static function isAugust($date = null): bool
+    {
+        return self::month($date) === self::August;
+    }
+
+    public static function isSeptember($date = null): bool
+    {
+        return self::month($date) === self::September;
+    }
+
+    public static function isOctober($date = null): bool
+    {
+        return self::month($date) === self::October;
+    }
+
+    public static function isNovember($date = null): bool
+    {
+        return self::month($date) === self::November;
+    }
+
+    public static function isDecember($date = null): bool
+    {
+        return self::month($date) === self::December;
+    }
+
+    public static function isToday($date = null): bool
+    {
+        return self::sameDate($date, self::today());
+    }
+
+    public static function isYesterday($date = null): bool
+    {
+        return self::sameDate($date, self::yesterday());
+    }
+
+    public static function isTomorrow($date = null): bool
+    {
+        return self::sameDate($date, self::tomorrow());
+    }
+
+    public static function isFirstDayOfMonth($date = null): bool
+    {
+        return self::day($date) === 1;
+    }
+
+    public static function isLastDayOfMonth($date = null): bool
+    {
+        return self::day($date) === self::daysInMonth($date);
+    }
+
+    public static function isFirstDayOfYear($date = null): bool
+    {
+        return $date->format('dm') === '0101';
+    }
+
+    public static function isLastDayOfYear($date = null): bool
+    {
+        return $date->format('dm') === '1231';
+    }
+
+    public static function isAM($date = null): bool
+    {
+        return $date->format('a') === 'am';
+    }
+
+    public static function isPM($date = null): bool
+    {
+        return $date->format('a') === 'pm';
+    }
+
+    public static function isMidway($date = null): bool
+    {
+        return $date->format('H:i:s') === self::Midday;
+    }
+
+    public static function isEndOfDay($date = null): bool
+    {
+        return $date->format('H:i:s') === self::EndOfDay;
+    }
+
+    public static function isStartOfDay($date = null): bool
+    {
+        return $date->format('H:i:s') === self::StartOfDay;
+    }
+
+    public static function isMidnight($date = null): bool
+    {
+        return $date->format('H:i:s') === self::Midnight;
+    }
+
+    public static function isLastMonthOfYear($date = null): bool
+    {
+        return self::month($date) === self::MONTHS_PER_YEAR;
+    }
+
+    public static function isFirstMonthOfYear($date = null): bool
+    {
+        return self::month($date) === self::FIRST_MONTH;
+    }
+
+    public static function lastMonth($date = null): int
+    {
+        $month = self::month($date);
+        return $month === self::January ? self::December : $month - 1;
+    }
+
+    public static function nextMonth($date = null): int
+    {
+        $month = self::month($date);
+        return $month === self::December ? self::January : $month + 1;
+    }
+
+    public static function nextYear($date = null): int
+    {
+        return self::year($date) + 1;
+    }
+
+    public static function lastYear($date = null): int
+    {
+        return self::year($date) - 1;
+    }
+
     public static function __callStatic($name, $arguments)
     {
         $date = self::immutable(array_shift($arguments));
-
-        if (isset(self::$formats[$name])) {
-            $format = self::$formats[$name];
-            return (int) $date->format($format);
-        }
-
-        switch ($name) {
-            case 'quarterOfYear':
-                return (int) ceil(self::month($date) / 3);
-
-            case 'halfOfYear':
-                return (int) ceil(self::month($date) / 6);
-
-            case 'isFirstHalfOfYear':
-                return self::halfOfYear($date) === 1;
-
-            case 'isSecondHalfOfYear':
-                return self::halfOfYear($date) === 2;
-
-            case 'isLeapYear':
-                return $date->format('L') === 1;
-
-            case 'isWeekday':
-                return self::dayOfWeek($date) <= 5;
-
-            case 'isWeekend':
-                return self::dayOfWeek($date) > 5;
-
-            case 'isSunday':
-                return self::dayOfWeek($date) === self::Sunday;
-
-            case 'isMonday':
-                return self::dayOfWeek($date) === self::Monday;
-
-            case 'isTuesday':
-                return self::dayOfWeek($date) === self::Tuesday;
-
-            case 'isWednesday':
-                return self::dayOfWeek($date) === self::Wednesday;
-
-            case 'isThursday':
-                return self::dayOfWeek($date) === self::Thursday;
-
-            case 'isFriday':
-                return self::dayOfWeek($date) === self::Friday;
-
-            case 'isSaturday':
-                return self::dayOfWeek($date) === self::Saturday;
-
-            case 'isToday':
-                return self::sameDate($date, self::today());
-
-            case 'isYesterday':
-                return self::sameDate($date, self::yesterday());
-
-            case 'isTomorrow':
-                return self::sameDate($date, self::tomorrow());
-
-            case 'isFirstDayOfMonth':
-                return self::day($date) === 1;
-
-            case 'isLastDayOfMonth':
-                return self::day($date) === self::daysInMonth($date);
-
-            case 'isFirstDayOfYear':
-                return $date->format('dm') === '0101';
-
-            case 'isLastDayOfYear':
-                return $date->format('dm') === '1231';
-
-            case 'isAM':
-                return $date->format('a') === 'am';
-
-            case 'isPM':
-                return $date->format('a') === 'pm';
-
-            case 'isMidway':
-                return $date->format('H:i:s') === '12:00:00';
-
-            case 'isEndOfDay':
-                return $date->format('H:i:s') === '23:59:59';
-
-            case 'isStartOfDay':
-            case 'isMidnight':
-                return $date->format('H:i:s') === '00:00:00';
-
-            case 'lastMonth':
-                $month = self::month($date);
-                return $month === 1 ? 12 : $month - 1;
-
-            case 'nextMonth':
-                $month = self::month($date);
-                return $month === 12 ? 1 : $month + 1;
-
-            case 'nextYear':
-                return self::year($date) + 1;
-
-            case 'lastYear':
-                return self::year($date) - 1;
-        }
 
         if (stripos($name, 'same') === 0 && strlen($name) > 4) {
             $_name = lcfirst(substr($name, 4));
@@ -418,13 +617,11 @@ class TimeUtil
         return self::isBefore(self::tomorrow(), $date);
     }
 
-    public static function isWorkday(
-        $date = null,
-        array $holidays = [],
-        array $weekend = [TimeUtil::Saturday, TimeUtil::Sunday]
-    ): bool {
+    public static function isWorkday($date = null, array $holidays = [], array $weekend = null): bool
+    {
         $dateTime = self::immutable($date);
         $dayOfWeek = self::dayOfWeek($dateTime);
+        $weekend = $weekend === null ? self::$weekend : $weekend;
 
         if (in_array($dayOfWeek, $weekend)) {
             return false;
@@ -439,11 +636,8 @@ class TimeUtil
         return true;
     }
 
-    public static function nextWorkday(
-        $begin = null,
-        array $holidays = [],
-        array $weekend = [TimeUtil::Saturday, TimeUtil::Sunday]
-    ): DateTimeImmutable {
+    public static function nextWorkday($begin = null, array $holidays = [], array $weekend = null): DateTimeImmutable
+    {
         $dateTime = self::immutable($begin);
         $workingDate = self::immutable($dateTime);
         while (!self::isWorkday($workingDate, $holidays, $weekend)){
@@ -458,7 +652,7 @@ class TimeUtil
         $date = self::startOfMonth($beginDate);
         $year = (int) $date->format('Y');
         $month = (int) $date->format('m');
-        $day = $day ?? OldDateTime::day();
+        $day = $day ?? self::day();
 
         $result = [];
         while (count($result) < $count) {
@@ -477,16 +671,40 @@ class TimeUtil
         return $result;
     }
 
+    public static function yearMonth(int $count, $beginDate = null, $format = 'Y-m'): array
+    {
+        $result = self::monthly($count, 1, $beginDate);
+        return self::formatAll($result, $format);
+    }
+
     public static function weeks(): array
     {
         return [
-            1 => 'Monday',
-            2 => 'Tuesday',
-            3 => 'Wednesday',
-            4 => 'Thursday',
-            5 => 'Friday',
-            6 => 'Saturday',
-            7 => 'Sunday'
+            self::Monday => 'Monday',
+            self::Tuesday => 'Tuesday',
+            self::Wednesday => 'Wednesday',
+            self::Thursday => 'Thursday',
+            self::Friday => 'Friday',
+            self::Saturday => 'Saturday',
+            self::Sunday => 'Sunday'
+        ];
+    }
+
+    public static function months(): array
+    {
+        return [
+            self::January => 'January',
+            self::February => 'February',
+            self::March => 'March',
+            self::April => 'April',
+            self::May => 'May',
+            self::June => 'June',
+            self::July => 'July',
+            self::August => 'August',
+            self::September => 'September',
+            self::October => 'October',
+            self::November => 'November',
+            self::December => 'December',
         ];
     }
 
