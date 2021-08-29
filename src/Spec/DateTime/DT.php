@@ -7,7 +7,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-class TimeUtil
+class DT
 {
     const Monday = 1;
     const Tuesday = 2;
@@ -415,17 +415,17 @@ class TimeUtil
 
     public static function isToday($date = null): bool
     {
-        return self::sameDate($date, self::today());
+        return self::isSameDate($date, self::today());
     }
 
     public static function isYesterday($date = null): bool
     {
-        return self::sameDate($date, self::yesterday());
+        return self::isSameDate($date, self::yesterday());
     }
 
     public static function isTomorrow($date = null): bool
     {
-        return self::sameDate($date, self::tomorrow());
+        return self::isSameDate($date, self::tomorrow());
     }
 
     public static function isFirstDayOfMonth($date = null): bool
@@ -440,42 +440,42 @@ class TimeUtil
 
     public static function isFirstDayOfYear($date = null): bool
     {
-        return $date->format('dm') === '0101';
+        return self::immutable($date)->format('dm') === '0101';
     }
 
     public static function isLastDayOfYear($date = null): bool
     {
-        return $date->format('dm') === '1231';
+        return self::immutable($date)->format('dm') === '1231';
     }
 
     public static function isAM($date = null): bool
     {
-        return $date->format('a') === 'am';
+        return self::immutable($date)->format('a') === 'am';
     }
 
     public static function isPM($date = null): bool
     {
-        return $date->format('a') === 'pm';
+        return self::immutable($date)->format('a') === 'pm';
     }
 
     public static function isMidway($date = null): bool
     {
-        return $date->format('H:i:s') === self::Midday;
+        return self::immutable($date)->format('H:i:s') === self::Midday;
     }
 
     public static function isEndOfDay($date = null): bool
     {
-        return $date->format('H:i:s') === self::EndOfDay;
+        return self::immutable($date)->format('H:i:s') === self::EndOfDay;
     }
 
     public static function isStartOfDay($date = null): bool
     {
-        return $date->format('H:i:s') === self::StartOfDay;
+        return self::immutable($date)->format('H:i:s') === self::StartOfDay;
     }
 
     public static function isMidnight($date = null): bool
     {
-        return $date->format('H:i:s') === self::Midnight;
+        return self::immutable($date)->format('H:i:s') === self::Midnight;
     }
 
     public static function isLastMonthOfYear($date = null): bool
@@ -520,92 +520,92 @@ class TimeUtil
         return self::formatEquals($date1, $date2, self::$formats['year']);
     }
 
-    public static function sameMonth($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameMonth($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
         return self::formatEquals($date1, $date2, self::$formats['month']) && $year1 === $year2;
     }
 
-    public static function sameDay($date1, $date2 = null): bool
+    public static function isSameDay($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['day']);
     }
 
-    public static function sameHour($date1, $date2 = null): bool
+    public static function isSameHour($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['hour']);
     }
 
-    public static function sameMinute($date1, $date2 = null): bool
+    public static function isSameMinute($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['minute']);
     }
 
-    public static function sameSecond($date1, $date2 = null): bool
+    public static function isSameSecond($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['second']);
     }
 
-    public static function sameMicrosecond($date1, $date2 = null): bool
+    public static function isSameMicrosecond($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['microsecond']);
     }
 
-    public static function sameTime($date1, $date2 = null): bool
+    public static function isSameTime($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['time']);
     }
 
-    public static function sameDayOfWeek($date1, $date2 = null): bool
+    public static function isSameDayOfWeek($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['dayOfWeek']);
     }
 
-    public static function sameDayOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameDayOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
         return self::formatEquals($date1, $date2, self::$formats['month']) && $year1 === $year2;
     }
 
-    public static function sameWeekOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameWeekOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
         return self::formatEquals($date1, $date2, self::$formats['weekOfYear']) && $year1 === $year2;
     }
 
-    public static function sameDaysInMonth($date1, $date2 = null): bool
+    public static function isSameDaysInMonth($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['daysInMonth']);
     }
 
-    public static function sameTimestamp($date1, $date2 = null): bool
+    public static function isSameTimestamp($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['timestamp']);
     }
 
-    public static function sameBirthday($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameBirthday($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
         return self::formatEquals($date1, $date2, self::$formats['birthday']) && $year1 === $year2;
     }
 
-    public static function sameDate($date1, $date2 = null): bool
+    public static function isSameDate($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['date']);
     }
 
-    public static function sameQuarterOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameQuarterOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
         return self::quarterOfYear($date1) === self::quarterOfYear($date2) && $year1 === $year2;
     }
 
-    public static function sameHalfOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
+    public static function isSameHalfOfYear($date1, $date2 = null, bool $ofSameYear = true): bool
     {
         $year1 = $ofSameYear ? self::year($date1) : null;
         $year2 = $ofSameYear ? self::year($date2): null;
@@ -682,7 +682,7 @@ class TimeUtil
         }
 
         foreach ($holidays as $holiday) {
-            if (self::sameDate($dateTime, $holiday)) {
+            if (self::isSameDate($dateTime, $holiday)) {
                 return false;
             }
         }
