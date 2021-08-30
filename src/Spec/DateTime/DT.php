@@ -96,9 +96,9 @@ class DT
         return new DateTime(self::$now, $tz ?? self::$nowTz);
     }
 
-    public static function timeZone($tz): \DateTimeZone
+    public static function setTimeZone($tz)
     {
-        return new \DateTimeZone($tz);
+        self::$nowTz = new \DateTimeZone($tz);
     }
 
     public static function today($tz = null): DateTimeImmutable
@@ -291,6 +291,19 @@ class DT
     public static function halfOfYear($date = null): int
     {
         return (int) ceil(self::month($date) / 6);
+    }
+
+    public static function decade($date = null): int
+    {
+        $year = (self::immutable($date))->format('y');
+        return (int) floor($year / 10);
+    }
+
+    public static function century($date = null): int
+    {
+        $year = (string) self::year($date);
+        $century = (int) substr_replace($year, '', -2);
+        return (int) substr($year, -2) === '00' ? $century : $century + 1;
     }
 
     public static function isFirstHalfOfYear($date = null): bool
@@ -515,7 +528,19 @@ class DT
         return self::immutable($date1)->format($format) === self::immutable($date2)->format($format);
     }
 
-    public static function sameYear($date1, $date2 = null): bool
+    public static function isSameDecade($date1, $date2 = null, $ofSameCentury = true): bool
+    {
+        $century1 = $ofSameCentury ? self::century($date1) : null;
+        $century2 = $ofSameCentury ? self::century($date2) : null;
+        return self::decade($date1) === self::decade($date2) && $century1 === $century2;
+    }
+
+    public static function isSameCentury($date1, $date2 = null): bool
+    {
+        return self::century($date1) === self::century($date2);
+    }
+
+    public static function isSameYear($date1, $date2 = null): bool
     {
         return self::formatEquals($date1, $date2, self::$formats['year']);
     }
@@ -731,35 +756,97 @@ class DT
         return self::formatAll($result, $format);
     }
 
-    public static function weeks(): array
+    public static function weeks(string $dictionary = null): array
     {
+        $dictionary = is_string($dictionary) && class_exists($dictionary) ? new $dictionary() : $dictionary;
         return [
-            self::Monday => 'Monday',
-            self::Tuesday => 'Tuesday',
-            self::Wednesday => 'Wednesday',
-            self::Thursday => 'Thursday',
-            self::Friday => 'Friday',
-            self::Saturday => 'Saturday',
-            self::Sunday => 'Sunday'
+            self::Monday => $dictionary ? $dictionary->week(self::Monday) : 'Monday',
+            self::Tuesday => $dictionary ? $dictionary->week(self::Tuesday) : 'Tuesday',
+            self::Wednesday => $dictionary ? $dictionary->week(self::Wednesday) : 'Wednesday',
+            self::Thursday => $dictionary ? $dictionary->week(self::Thursday) : 'Thursday',
+            self::Friday => $dictionary ? $dictionary->week(self::Friday) : 'Friday',
+            self::Saturday => $dictionary ? $dictionary->week(self::Saturday) : 'Saturday',
+            self::Sunday => $dictionary ? $dictionary->week(self::Sunday) : 'Sunday'
         ];
     }
 
-    public static function months(): array
+    public static function weekdays(string $dictionary = null): array
     {
+        $weeks = self::weeks($dictionary);
+        foreach (self::$weekend as $weekend) {
+            unset($weeks[$weekend]);
+        }
+
+        return $weeks;
+    }
+
+    public static function weekend(string $dictionary = null): array
+    {
+        $weeks = self::weeks($dictionary);
+        foreach ($weeks as $n => $name) {
+            if (!in_array($n, self::$weekend)) {
+                unset($weeks[$n]);
+            }
+        }
+
+        return $weeks;
+    }
+
+    public static function localeWeeks(string $locale = null): array
+    {
+        $currentLocale = setlocale(LC_TIME, 0);
+        if ($locale !== null) {
+            setlocale(LC_TIME, $locale);
+        }
+
+        $result = [];
+        foreach (self::weeks() as $key => $name) {
+            $result[$key] = ucfirst(strftime('%A', strtotime("last $name")));
+        }
+
+        if ($locale !== null) {
+            setlocale(LC_TIME, $currentLocale);
+        }
+
+        return $result;
+    }
+
+    public static function months(string $dictionary = null): array
+    {
+        $dictionary = is_string($dictionary) && class_exists($dictionary) ? new $dictionary() : $dictionary;
         return [
-            self::January => 'January',
-            self::February => 'February',
-            self::March => 'March',
-            self::April => 'April',
-            self::May => 'May',
-            self::June => 'June',
-            self::July => 'July',
-            self::August => 'August',
-            self::September => 'September',
-            self::October => 'October',
-            self::November => 'November',
-            self::December => 'December',
+            self::January => $dictionary ? $dictionary->month(self::January) : 'January',
+            self::February => $dictionary ? $dictionary->month(self::February) : 'February',
+            self::March => $dictionary ? $dictionary->month(self::March) : 'March',
+            self::April => $dictionary ? $dictionary->month(self::April) : 'April',
+            self::May => $dictionary ? $dictionary->month(self::May) : 'May',
+            self::June => $dictionary ? $dictionary->month(self::June) : 'June',
+            self::July => $dictionary ? $dictionary->month(self::July) : 'July',
+            self::August => $dictionary ? $dictionary->month(self::August) : 'August',
+            self::September => $dictionary ? $dictionary->month(self::September) : 'September',
+            self::October => $dictionary ? $dictionary->month(self::October) : 'October',
+            self::November => $dictionary ? $dictionary->month(self::November) : 'November',
+            self::December => $dictionary ? $dictionary->month(self::December) : 'December',
         ];
+    }
+
+    public static function localeMonths(string $locale = null): array
+    {
+        $currentLocale = setlocale(LC_TIME, 0);
+        if ($locale !== null) {
+            setlocale(LC_TIME, $locale);
+        }
+
+        $result = [];
+        foreach (self::months() as $key => $name) {
+            $result[$key] = ucfirst(strftime('%B', strtotime("01 $name")));
+        }
+
+        if ($locale !== null) {
+            setlocale(LC_TIME, $currentLocale);
+        }
+
+        return $result;
     }
 
     public static function dayOfWeekName($date = null): string
@@ -880,19 +967,6 @@ class DT
         }
 
         return new DateTime($dateTime, $tz ?? self::$nowTz);
-    }
-
-    public static function decade($date = null): int
-    {
-        $year = (self::immutable($date))->format('y');
-        return (int) floor($year / 10);
-    }
-
-    public static function century($date = null): int
-    {
-        $year = (string) self::year($date);
-        $century = (int) substr_replace($year, '', -2);
-        return (int) substr($year, -2) === '00' ? $century : $century + 1;
     }
 
     public static function centuryInRomanNumerals($date = null): string
