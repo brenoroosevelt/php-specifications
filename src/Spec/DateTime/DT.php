@@ -82,7 +82,7 @@ class DT
 
     public static function resetNow()
     {
-        self::$now = null;
+        self::$now = 'now';
         self::$nowTz = null;
     }
 
