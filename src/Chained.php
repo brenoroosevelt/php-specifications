@@ -31,9 +31,9 @@ class Chained implements Specification
         return $this;
     }
 
-    public function rule($rule, ...$args): self
+    public function rule(...$rule): self
     {
-        return $this->append(rule($rule, ...$args));
+        return $this->append(rule(...$rule));
     }
 
     public function not(Specification $specification): self

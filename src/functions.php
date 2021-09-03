@@ -91,9 +91,9 @@ if (! function_exists('BrenoRoosevelt\Specification\_xor')) {
 }
 
 if (! function_exists('BrenoRoosevelt\Specification\rule')) {
-    function rule($rule, ...$args): Specification
+    function rule(...$args): Specification
     {
-        return new Rule($rule, ...$args);
+        return new Rule(...$args);
     }
 }
 
@@ -326,8 +326,8 @@ if (! function_exists('BrenoRoosevelt\Specification\atMost')) {
 }
 
 if (! function_exists('BrenoRoosevelt\Specification\accept')) {
-    function accept(iterable $collection, $rule, ...$args) {
-        $rule = rule($rule, ...$args);
+    function accept(iterable $collection, ...$rule) {
+        $rule = rule(...$rule);
         if (is_array($collection)) {
             return array_filter($collection, function ($candidate) use ($rule) {
                 return $rule->isSatisfiedBy($candidate);
@@ -346,8 +346,8 @@ if (! function_exists('BrenoRoosevelt\Specification\accept')) {
 }
 
 if (! function_exists('BrenoRoosevelt\Specification\reject')) {
-    function reject(iterable $collection, $rule, ...$args) {
-        $rule = not(rule($rule, ...$args));
+    function reject(iterable $collection, ...$rule) {
+        $rule = not(rule(...$rule));
         return accept($collection, $rule);
     }
 }
