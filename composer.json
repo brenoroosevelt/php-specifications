@@ -1,5 +1,5 @@
 {
-  "name": "brenoroosevelt/app",
+  "name": "brenoroosevelt/php-specifications",
   "description": "Implementation of Specification Pattern for PHP",
   "keywords": [
     "contracts",
