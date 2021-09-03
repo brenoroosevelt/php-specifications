@@ -352,8 +352,8 @@ if (! function_exists('BrenoRoosevelt\Specification\reject')) {
     }
 }
 
-if (! function_exists('BrenoRoosevelt\Specification\match')) {
-    function match($candidate, Specification $specification): bool {
+if (! function_exists('BrenoRoosevelt\Specification\matching')) {
+    function matching($candidate, Specification $specification): bool {
         return $specification->isSatisfiedBy($candidate);
     }
 }
