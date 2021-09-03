@@ -358,7 +358,7 @@ if (! function_exists('BrenoRoosevelt\Specification\match')) {
     }
 }
 
-if (! function_exists('BrenoRoosevelt\Specification\match')) {
+if (! function_exists('BrenoRoosevelt\Specification\when')) {
     function when($candidate, Specification $specification, callable $operation)
     {
         return $specification->isSatisfiedBy($candidate) ? $operation($candidate) : null;
