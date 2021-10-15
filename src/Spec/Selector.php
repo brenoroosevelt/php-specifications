@@ -17,4 +17,9 @@ abstract class Selector implements Specification
         $this->key = $key;
         $this->constraint = $constraint;
     }
+
+    public function getKey(): string
+    {
+        return $this->key;
+    }
 }

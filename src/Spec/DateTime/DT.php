@@ -41,6 +41,7 @@ class DT
     const MICROS_PER_SECOND = 1000000;
 
     const FIRST_MONTH = 1;
+    const LAST_MONTH = 12;
     const MONTHS_PER_YEAR = 12;
 
     public static $weekend = [
