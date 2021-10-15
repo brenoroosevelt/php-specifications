@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace BrenoRoosevelt\Specification\Spec;
 
 use BrenoRoosevelt\Specification\Specification;
+use Throwable;
 
 class PregMatch implements Specification
 {
@@ -17,6 +18,12 @@ class PregMatch implements Specification
 
     public function isSatisfiedBy($candidate): bool
     {
-        return is_string($candidate) && preg_match($this->pattern, $candidate) === 1;
+        try {
+            $subject = (string) $candidate;
+            return preg_match($this->pattern, $subject) === 1;
+        } catch (Throwable $exception) {
+        }
+
+        return false;
     }
 }
