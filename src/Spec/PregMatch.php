@@ -17,6 +17,6 @@ class PregMatch implements Specification
 
     public function isSatisfiedBy($candidate): bool
     {
-        return preg_match($this->pattern, $candidate) === 1;
+        return is_string($candidate) && preg_match($this->pattern, $candidate) === 1;
     }
 }
